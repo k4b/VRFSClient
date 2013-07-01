@@ -5,32 +5,29 @@ using System.Text;
 
 namespace VRClient
 {
-    class MessageRequest : Message
+    class MessageReply : Message
     {
-        public Operation operation { get; set; }
-        public int clientID { get; set; }
         public int requestNumber { get; set; }
         public int viewNumber { get; set; }
+        public bool result { get; set; }
 
-        public MessageRequest(int messageID, Operation operation, int clientID, int requestNumber, int viewNumber)
+        public MessageReply(int messageID, int viewNumber, int requestNumber, bool result)
         {
             this.messageID = messageID;
-            this.clientID = clientID;
             this.requestNumber = requestNumber;
             this.viewNumber = viewNumber;
-            this.operation = operation;
+            this.result = result;
         }
 
         public override string ToString()
         {
             string s = "";
-            s += "Message REQUEST" + Environment.NewLine;
+            s += "Message REPLY" + Environment.NewLine;
             s += "ID: " + messageID + Environment.NewLine;
-            s += "Operation: " + operation.operationID + Environment.NewLine;
             s += "Request number: " + requestNumber + Environment.NewLine;
             s += "View number: " + viewNumber + Environment.NewLine;
+            s += "Result: " + result + Environment.NewLine;
             return s;
         }
     }
 }
-

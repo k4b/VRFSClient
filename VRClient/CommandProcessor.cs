@@ -10,17 +10,19 @@ namespace VRClient
     {
         VRClient client { get; set; }
         VRProxy proxy { get; set; }
+        bool isRunning;
 
         public CommandProcessor(VRClient client, VRProxy proxy)
         {
             this.client = client;
             this.proxy = proxy;
+            isRunning = true;
         }
 
         public void startProcessing()
         {
             showHelp();
-            while (true)
+            while (isRunning)
             {
                 askCommand();
                 string line = Console.ReadLine();
@@ -57,6 +59,11 @@ namespace VRClient
             }
         }
 
+        public void stopProcessing()
+        {
+            isRunning = false;
+        }
+
         public void showHelp()
         {
             Console.WriteLine("#Commands:");
@@ -76,12 +83,17 @@ namespace VRClient
 
         private void processCopy(string[] commandTokens)
         {
-            Console.WriteLine(commandTokens[0]);
             string srcPath = commandTokens[1];
             string destPath = commandTokens[2];
             byte[] bytes = File.ReadAllBytes(srcPath);
+
+            client.incrementRequestNumber();
+            Console.WriteLine(client.requestNumber);
             Operation operationCopy = new Operation(bytes, destPath);
             MessageRequest request = new MessageRequest(1, operationCopy, client.ID, client.requestNumber, client.viewNumber);
+            Console.WriteLine("Sending:");
+            Console.WriteLine(request.ToString());
+            //proxy.startClient();
             proxy.sendMessage(request);
         }
 

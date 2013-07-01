@@ -15,6 +15,8 @@ namespace VRClient
         public int viewNumber { get; set; }
         public int requestNumber { get; set; }
         public CommandProcessor commandProcessor;
+        public MessageProcessor messageProcessor;
+        public VRProxy proxy;
 
         public VRClient()
         {
@@ -25,9 +27,16 @@ namespace VRClient
             requestNumber = 0;
 
             Console.WriteLine(identify());
-            VRProxy proxy = new VRProxy(primary.address);
+            messageProcessor = new MessageProcessor();
+            proxy = new VRProxy(primary.address, messageProcessor);
             commandProcessor = new CommandProcessor(this, proxy);
+            messageProcessor.commandProcessor = commandProcessor;
             commandProcessor.startProcessing();
+        }
+
+        public void incrementRequestNumber()
+        {
+            requestNumber++;
         }
 
         public void readAndSetHosts()
