@@ -9,6 +9,7 @@ namespace VRClient
     {
         static void Main(string[] args)
         {
+            VRClient client = new VRClient();
         }
     }
 }
