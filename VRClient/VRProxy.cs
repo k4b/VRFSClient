@@ -42,13 +42,16 @@ namespace VRClient
             clientSocket.SendMore(BitConverter.GetBytes(message.messageID));
             clientSocket.SendMore(BitConverter.GetBytes(message.operation.operationID));
             clientSocket.SendMore(message.operation.path, Encoding.Unicode);
-            clientSocket.SendMore(message.operation.file);
+            if (message.operation.operationID == 1)
+            {
+                clientSocket.SendMore(message.operation.file);
+            }
             clientSocket.SendMore(BitConverter.GetBytes(message.clientID));
             clientSocket.SendMore(BitConverter.GetBytes(message.requestNumber));
             clientSocket.Send(BitConverter.GetBytes(message.viewNumber));
             try
             {
-                waitForReply(2 * 1000);
+                waitForReply(3 * 1000);
             }
             catch (System.Exception e)
             {
@@ -81,13 +84,11 @@ namespace VRClient
             MessageReply reply = null;
             //while (isListening)
             {
-                var messageID = BitConverter.ToInt32(Encoding.Unicode.GetBytes(clientSocket.Recv(Encoding.Unicode)), 0);
-                var viewNumber = BitConverter.ToInt32(Encoding.Unicode.GetBytes(clientSocket.Recv(Encoding.Unicode)), 0);
-                var requestNumber = BitConverter.ToInt32(Encoding.Unicode.GetBytes(clientSocket.Recv(Encoding.Unicode)), 0);
-                var result = BitConverter.ToBoolean(Encoding.Unicode.GetBytes(clientSocket.Recv(Encoding.Unicode)), 0);
+                var messageID = BitConverter.ToInt32(clientSocket.Recv(), 0);
+                var viewNumber = BitConverter.ToInt32(clientSocket.Recv(), 0);
+                var requestNumber = BitConverter.ToInt32(clientSocket.Recv(), 0);
+                var result = BitConverter.ToBoolean(clientSocket.Recv(), 0);
                 reply = new MessageReply(messageID, viewNumber, requestNumber, result);
-                Console.WriteLine("Received:");
-                Console.WriteLine(reply.ToString());
             }
             return reply;
         }

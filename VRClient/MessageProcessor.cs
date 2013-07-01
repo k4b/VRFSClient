@@ -11,9 +11,8 @@ namespace VRClient
         
         public void processMessage(MessageReply reply)
         {
-            Console.WriteLine("Received message:");
+            Console.WriteLine("Received:");
             Console.WriteLine(reply.ToString());
-            commandProcessor.askCommand();
         }
     }
 }

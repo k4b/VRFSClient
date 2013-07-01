@@ -49,6 +49,11 @@ namespace VRClient
                 }
                 else if (command.Equals("delete"))
                 {
+                    commandTokens = new string[]
+                    {
+                        "delete",
+                        "hosts.txt"
+                    };
                     processDelete(commandTokens);
                 }
                 else
@@ -68,7 +73,7 @@ namespace VRClient
         {
             Console.WriteLine("#Commands:");
             Console.WriteLine("#Copy: copy src_file dest_file_in_root");
-            Console.WriteLine("#Delete: delete file");
+            Console.WriteLine("#Delete: delete file_path");
             Console.WriteLine("#Help: help");
             Console.WriteLine("#Exit: exit");
             Console.WriteLine("#Full paths to files");
@@ -90,6 +95,7 @@ namespace VRClient
             client.incrementRequestNumber();
             Operation operationCopy = new Operation(bytes, destPath);
             MessageRequest request = new MessageRequest(1, operationCopy, client.ID, client.requestNumber, client.viewNumber);
+            Console.WriteLine();
             Console.WriteLine("Sending:");
             Console.WriteLine(request.ToString());
             //proxy.startClient();
@@ -98,7 +104,13 @@ namespace VRClient
 
         private void processDelete(string[] commandTokens) 
         {
-            Console.WriteLine(commandTokens[0]);
+            string destPath = commandTokens[1];
+            client.incrementRequestNumber();
+            Operation operationDelete = new Operation(destPath);
+            MessageRequest request = new MessageRequest(1, operationDelete, client.ID, client.requestNumber, client.viewNumber);
+            Console.WriteLine("Sending:");
+            Console.WriteLine(request.ToString());
+            proxy.sendMessage(request);
         }
     }
 }
