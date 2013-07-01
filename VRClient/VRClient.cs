@@ -13,6 +13,7 @@ namespace VRClient
         public ReplicaInfo primary { get; set; }
         public List<ReplicaInfo> replicaList { get; set; }
         private int viewNumber { get; set; }
+        public CommandProcessor commandProcessor;
 
         public VRClient()
         {
@@ -22,8 +23,9 @@ namespace VRClient
             viewNumber = 1;
 
             Console.WriteLine(identify());
-            VRProxy proxy = new VRProxy();
-            proxy.startClient(primary.address);
+            VRProxy proxy = new VRProxy(primary.address);
+            commandProcessor = new CommandProcessor(proxy);
+            commandProcessor.startProcessing();
         }
 
         public void readAndSetHosts()

@@ -8,22 +8,39 @@ namespace VRClient
 {
     class VRProxy
     {
-        public void startClient(string address)
+        string primaryAddress;
+        Socket clientSocket { get; set; }
+        Context context { get; set; }
+
+        public VRProxy(string address)
         {
-            using (Context context = new Context())
-            {
-                using (Socket client = context.Socket(SocketType.REQ))
-                {
-                    client.Connect("tcp://" + address);
+            primaryAddress = address;
+            Context context = new Context();
+            clientSocket = context.Socket(SocketType.REQ);
+            clientSocket.Connect("tcp://" + primaryAddress);
+        }
 
-                    const string requestMessage = "Hello";
-                    Console.WriteLine("Sending request");
-                    client.Send(requestMessage, Encoding.Unicode);
+        public void startClient()
+        {
 
-                    string reply = client.Recv(Encoding.Unicode);
-                    Console.WriteLine("Received reply: " + reply);
-                }
-            }
+            const string requestMessage = "1";
+            Console.WriteLine("Sending request");
+            clientSocket.Send(requestMessage, Encoding.Unicode);
+
+            string reply = clientSocket.Recv(Encoding.Unicode);
+            Console.WriteLine("Received reply: " + reply);
+        }
+
+        public void sendMessage(MessageRequest message)
+        {
+            Console.WriteLine("Sending request message");
+            clientSocket.SendMore(BitConverter.GetBytes(message.messageID));
+            clientSocket.SendMore(BitConverter.GetBytes(message.operation.operationID));
+            clientSocket.SendMore(message.operation.path, Encoding.Unicode);
+            clientSocket.SendMore(message.operation.file);
+            clientSocket.SendMore(BitConverter.GetBytes(message.clientID));
+            clientSocket.SendMore(BitConverter.GetBytes(message.reqestNumber));
+            clientSocket.SendMore(BitConverter.GetBytes(message.viewNumber));
         }
     }
 }
