@@ -14,6 +14,7 @@ namespace VRClient
         Socket clientSocket { get; set; }
         Context context { get; set; }
         bool isListening;
+        public CommandProcessor commandProcessor { get; set; }
 
         public VRProxy(string address, MessageProcessor messageProcessor)
         {
@@ -23,7 +24,7 @@ namespace VRClient
             clientSocket = context.Socket(SocketType.REQ);
             clientSocket.Connect("tcp://" + primaryAddress);
             isListening = false;
-        }
+        }        
 
         public void startClient()
         {
@@ -45,7 +46,14 @@ namespace VRClient
             clientSocket.SendMore(BitConverter.GetBytes(message.clientID));
             clientSocket.SendMore(BitConverter.GetBytes(message.requestNumber));
             clientSocket.Send(BitConverter.GetBytes(message.viewNumber));
-            waitForReply(5*1000);
+            try
+            {
+                waitForReply(2 * 1000);
+            }
+            catch (System.Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         public void waitForReply(int timeout)
@@ -63,25 +71,15 @@ namespace VRClient
         public void receiveOperation()
         {
             MessageReply reply = null;
-            try
-            {
-                reply = receiveReply();
-            }
-            catch (System.Exception e)
-            {
-                
-            }
-            finally
-            {
-                    messageProcessor.processMessage(reply);
-            }
+            reply = receiveReply();
+            messageProcessor.processMessage(reply);
         }
 
         public MessageReply receiveReply()
         {
             isListening = true;
             MessageReply reply = null;
-            while (isListening)
+            //while (isListening)
             {
                 var messageID = BitConverter.ToInt32(Encoding.Unicode.GetBytes(clientSocket.Recv(Encoding.Unicode)), 0);
                 var viewNumber = BitConverter.ToInt32(Encoding.Unicode.GetBytes(clientSocket.Recv(Encoding.Unicode)), 0);

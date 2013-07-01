@@ -30,6 +30,7 @@ namespace VRClient
             messageProcessor = new MessageProcessor();
             proxy = new VRProxy(primary.address, messageProcessor);
             commandProcessor = new CommandProcessor(this, proxy);
+            proxy.commandProcessor = commandProcessor;
             messageProcessor.commandProcessor = commandProcessor;
             commandProcessor.startProcessing();
         }

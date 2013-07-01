@@ -88,7 +88,6 @@ namespace VRClient
             byte[] bytes = File.ReadAllBytes(srcPath);
 
             client.incrementRequestNumber();
-            Console.WriteLine(client.requestNumber);
             Operation operationCopy = new Operation(bytes, destPath);
             MessageRequest request = new MessageRequest(1, operationCopy, client.ID, client.requestNumber, client.viewNumber);
             Console.WriteLine("Sending:");
