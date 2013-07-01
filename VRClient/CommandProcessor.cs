@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace VRClient
 {
     class CommandProcessor
     {
-        VRProxy proxy;
+        VRClient client { get; set; }
+        VRProxy proxy { get; set; }
 
-        public CommandProcessor(VRProxy proxy)
+        public CommandProcessor(VRClient client, VRProxy proxy)
         {
+            this.client = client;
             this.proxy = proxy;
         }
 
@@ -76,7 +79,10 @@ namespace VRClient
             Console.WriteLine(commandTokens[0]);
             string srcPath = commandTokens[1];
             string destPath = commandTokens[2];
-            proxy.startClient();
+            byte[] bytes = File.ReadAllBytes(srcPath);
+            Operation operationCopy = new Operation(bytes, destPath);
+            MessageRequest request = new MessageRequest(1, operationCopy, client.ID, client.requestNumber, client.viewNumber);
+            proxy.sendMessage(request);
         }
 
         private void processDelete(string[] commandTokens) 
