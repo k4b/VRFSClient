@@ -26,6 +26,7 @@ namespace VRClient
             {
                 askCommand();
                 string line = Console.ReadLine();
+                Console.WriteLine();
                 string[] commandTokens = line.Split(' ');
                 
                 string command = commandTokens[0];
@@ -58,9 +59,11 @@ namespace VRClient
                 }
                 else
                 {
-                    Console.WriteLine("Wrong command!");
+                    Console.WriteLine("NO SUCH COMMAND!");
+                    Console.WriteLine();
+                    showHelp();
                 }
-                Console.WriteLine("");
+                Console.WriteLine();
             }
         }
 
@@ -95,7 +98,6 @@ namespace VRClient
             client.incrementRequestNumber();
             Operation operationCopy = new Operation(bytes, destPath);
             MessageRequest request = new MessageRequest(1, operationCopy, client.ID, client.requestNumber, client.viewNumber);
-            Console.WriteLine();
             Console.WriteLine("Sending:");
             Console.WriteLine(request.ToString());
             //proxy.startClient();
